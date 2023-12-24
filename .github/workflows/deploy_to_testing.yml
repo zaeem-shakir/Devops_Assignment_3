@@ -1,9 +1,12 @@
-name: Deploy to Testing Environment
+name: Deploy to Staging
+
+run-name: ${{github.actor}} initiated the workflow - Deploy To Testing
 
 on:
-  pull_request:
+  push:
     branches:
       - main
+
 jobs:
   first-job:
     runs-on: ubuntu-latest
@@ -12,9 +15,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '14.x'
+          node-version: '20'
+
       - name: testing node
         run: |
           echo "node version is:"
@@ -22,43 +26,42 @@ jobs:
           npm -v
           
       - name: Install Dependencies
-        working-directory: ./devop_testapp
-        run: npm i
+        run: |
+          cd devapp
+          npm i
 
       - name: Build Project
-        working-directory: ./devop_testapp
-        run: npm run build
+        run:  |
+          cd devapp
+          npm run build
 
       - name: Unit Testing
-        working-directory: ./devop_testapp
-        run: npm test
+        run:  |
+          cd devapp
+          npm test
 
-      - name: Code Analysis/Linting
-        working-directory: ./devop_testapp
-        run: npm run lint
-
-      # - name: Deploy to AWS Staging Server
-      #   uses: JimCronqvist/action-ssh@master
-      #   with:
-      #     hosts: 'ubuntu@34.207.198.176'
-      #     privatekey: ${{secrets.EC2_STAGING_SERVER_SSH_ACCESS}}
-      #     command: |
-      #       export NVM_DIR=/home/ubuntu/.nvm
-      #       source /home/ubuntu/.nvm/nvm.sh
-      #       cd /home/ubuntu/dev_ass_2/devop_testapp/
-      #       killall node
-      #       git pull
-      #       echo "1"
-      #       npm run dev
+      - name: Deploy to AWS Staging Server
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: 'ubuntu@16.170.158.234'
+          privatekey: ${{secrets.ssh_dev_ass_3_key}}
+          command: |
+            export NVM_DIR=/home/ubuntu/.nvm
+            source /home/ubuntu/.nvm/nvm.sh
+            cd /home/ubuntu/Work/ass3/
+            killall node
+            pwd
+            docker-compose down
+            docker-compose up -d
             
-      # - name: deployment message passed
-      #   if: success()
-      #   run: |
-      #      echo "deployment passed"
+      - name: deployment message passed
+        if: success()
+        run: |
+           echo "deployment passed"
            
-      # - name: deployment message failed
-      #   if: failure()
-      #   run: |
-      #      echo "deployment failed"
+      - name: deployment message failed
+        if: failure()
+        run: |
+           echo "deployment failed"
           
 

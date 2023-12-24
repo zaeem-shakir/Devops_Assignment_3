@@ -39,40 +39,17 @@ jobs:
         run:  |
           cd devapp
           npm test
-      
-      # - name: Code Analysis/Linting
-        # run: npm run lint
-        
-      - uses: docker-practice/actions-setup-docker@master
-        timeout-minutes: 12
-      - run: |
-          set -x
-          docker version
-          docker run --rm hello-world
-        
-      # Deploy All Changes To The Staging Server
-      - name: Deploy To Changes To Staging Server
-        uses: burnett01/rsync-deployments@6.0.0
-        with:
-          switches: -avzr --delete
-          path: ./*
-          remote_path: ~/Work/deploying_ass3/
-          remote_host: 3.84.5.63
-          remote_user: ubuntu
-          remote_key: ${{ secrets.EC2_STAGING_SERVER_SSH_ACCESS_3 }}
 
       - name: Deploy to AWS Staging Server
         uses: JimCronqvist/action-ssh@master
         with:
-          hosts: 'ubuntu@3.84.5.63'
-          privatekey: ${{secrets.EC2_STAGING_SERVER_SSH_ACCESS_3}}
+          hosts: 'ubuntu@16.170.158.234'
+          privatekey: ${{secrets.ssh_dev_ass_3_key}}
           command: |
             export NVM_DIR=/home/ubuntu/.nvm
             source /home/ubuntu/.nvm/nvm.sh
             cd /home/ubuntu/Work/ass3/
             killall node
-            # git pull
-            echo "1"
             pwd
             docker-compose down
             docker-compose up -d
