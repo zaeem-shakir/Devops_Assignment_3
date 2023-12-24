@@ -1,0 +1,64 @@
+name: Deploy to Testing Environment
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.x'
+      - name: testing node
+        run: |
+          echo "node version is:"
+          node -v
+          npm -v
+          
+      - name: Install Dependencies
+        working-directory: ./devop_testapp
+        run: npm i
+
+      - name: Build Project
+        working-directory: ./devop_testapp
+        run: npm run build
+
+      - name: Unit Testing
+        working-directory: ./devop_testapp
+        run: npm test
+
+      - name: Code Analysis/Linting
+        working-directory: ./devop_testapp
+        run: npm run lint
+
+      # - name: Deploy to AWS Staging Server
+      #   uses: JimCronqvist/action-ssh@master
+      #   with:
+      #     hosts: 'ubuntu@34.207.198.176'
+      #     privatekey: ${{secrets.EC2_STAGING_SERVER_SSH_ACCESS}}
+      #     command: |
+      #       export NVM_DIR=/home/ubuntu/.nvm
+      #       source /home/ubuntu/.nvm/nvm.sh
+      #       cd /home/ubuntu/dev_ass_2/devop_testapp/
+      #       killall node
+      #       git pull
+      #       echo "1"
+      #       npm run dev
+            
+      # - name: deployment message passed
+      #   if: success()
+      #   run: |
+      #      echo "deployment passed"
+           
+      # - name: deployment message failed
+      #   if: failure()
+      #   run: |
+      #      echo "deployment failed"
+          
+
