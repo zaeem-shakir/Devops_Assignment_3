@@ -43,12 +43,12 @@ jobs:
       - name: Deploy to AWS Staging Server
         uses: JimCronqvist/action-ssh@master
         with:
-          hosts: 'ubuntu@16.170.158.234'
+          hosts: 'ubuntu@51.20.138.55'
           privatekey: ${{secrets.ssh_dev_ass_3_key}}
           command: |
             export NVM_DIR=/home/ubuntu/.nvm
             source /home/ubuntu/.nvm/nvm.sh
-            cd /home/ubuntu/Work/ass3/
+            cd /home/ubuntu/dev_ass3
             killall node
             pwd
             docker-compose down
